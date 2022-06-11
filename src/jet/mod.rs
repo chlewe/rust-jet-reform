@@ -28,8 +28,8 @@ pub trait AppError: std::error::Error + Copy + Clone + Eq + Ord + Hash {}
 pub struct JetNode {
     pub(crate) name: &'static str,
     pub(crate) cmr: [u8; 32],
-    pub(crate) source_ty: &'static str,
-    pub(crate) target_ty: &'static str,
+    pub(crate) _source_ty: &'static str,
+    pub(crate) _target_ty: &'static str,
 }
 
 impl JetNode {
