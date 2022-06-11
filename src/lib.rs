@@ -1,3 +1,4 @@
+pub mod error;
 pub mod jet;
 pub mod term;
 
@@ -6,7 +7,6 @@ mod test {
     use crate::jet;
     use crate::jet::application::{Bitcoin, Core, Elements};
     use crate::jet::Application;
-    use crate::term::Term;
 
     #[test]
     fn core_jet() {
