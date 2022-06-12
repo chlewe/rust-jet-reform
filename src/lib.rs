@@ -7,6 +7,8 @@ mod test {
     use crate::jet;
     use crate::jet::application::{Bitcoin, Core, Elements};
     use crate::jet::Application;
+    #[cfg(any(feature = "bitcoin", feature = "elements"))]
+    use crate::term::Term;
 
     #[test]
     fn core_jet() {
@@ -42,9 +44,6 @@ mod test {
     fn bitcoin_term() {
         let term = Term::<u64, Bitcoin>::Jet(&jet::bitcoin::VERSION);
         assert_eq!(Ok(1337), term.exec());
-
-        let term = Term::<u64, Core>::Jet(&jet::bitcoin::VERSION);
-        assert!(term.exec().is_err());
     }
 
     #[cfg(feature = "elements")]
@@ -52,8 +51,5 @@ mod test {
     fn elements_term() {
         let term = Term::<u64, Elements>::Jet(&jet::elements::VERSION);
         assert_eq!(Ok(31337), term.exec());
-
-        let term = Term::<u64, Core>::Jet(&jet::elements::VERSION);
-        assert!(term.exec().is_err());
     }
 }
