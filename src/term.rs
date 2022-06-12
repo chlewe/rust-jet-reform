@@ -1,12 +1,10 @@
 use crate::error::LibError;
 use crate::jet::{Application, JetNode};
-use std::marker::PhantomData;
 
 pub enum Term<Witness, App: Application> {
     Unit,
     Witness(Witness),
-    Jet(&'static JetNode),
-    _Marker(PhantomData<App>),
+    Jet(&'static JetNode<App>),
 }
 
 impl<App: Application> Term<u64, App> {
@@ -24,7 +22,6 @@ impl<App: Application> Term<u64, App> {
             Term::Jet(jet) => App::encode_jet(jet),
             Term::Unit => 0,
             Term::Witness(_witness) => 1,
-            _ => panic!("Illegal term!"),
         }
     }
 
@@ -33,7 +30,6 @@ impl<App: Application> Term<u64, App> {
             Term::Jet(jet) => App::exec_jet(jet),
             Term::Unit => Ok(0),
             Term::Witness(witness) => Ok(*witness),
-            _ => panic!("Illegal term!"),
         }
     }
 }

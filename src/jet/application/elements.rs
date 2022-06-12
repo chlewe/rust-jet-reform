@@ -1,9 +1,11 @@
 use crate::error::LibError;
 use crate::jet;
 use crate::jet::application::core::CoreError;
+use crate::jet::elements::ElementsJetName;
 use crate::jet::{AppError, Application, JetNode};
 
 /// Elements application
+#[derive(Debug)]
 pub struct Elements {}
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
@@ -30,35 +32,34 @@ impl From<CoreError> for ElementsError {
 
 impl Application for Elements {
     type Error = ElementsError;
+    type JetName = ElementsJetName;
 
-    fn decode_jet(code: u8) -> Result<&'static JetNode, LibError> {
+    fn decode_jet(code: u8) -> Result<&'static JetNode<Self>, LibError> {
         match code {
-            100 => Ok(&jet::core::ADDER32),
-            200 => Ok(&jet::bitcoin::VERSION),
+            100 => Ok(&jet::elements::ADDER32),
+            200 => Ok(&jet::elements::VERSION),
             _ => Err(LibError::ParseError),
         }
     }
 
-    fn encode_jet(jet: &JetNode) -> u8 {
+    fn encode_jet(jet: &JetNode<Self>) -> u8 {
         match jet.name {
-            "adder32" => 100,
-            "version" => 200,
-            _ => panic!("Unknown Elements jet!"),
+            ElementsJetName::Adder => 100,
+            ElementsJetName::Version => 200,
         }
     }
 
     /// Insane code that absolutely requires feature `elements` to compile.
     #[cfg(feature = "elements")]
-    fn exec_jet(jet: &JetNode) -> Result<u64, Self::Error> {
+    fn exec_jet(jet: &JetNode<Self>) -> Result<u64, Self::Error> {
         match jet.name {
-            "adder32" => Ok(jet::application::Core::exec_jet(jet)?),
-            "version" => Ok(31337), // rad!
-            _ => panic!("Unknown Elements jet!"),
+            ElementsJetName::Adder => Ok(jet::application::Core::exec_jet(&jet::core::ADDER32)?),
+            ElementsJetName::Version => Ok(31337), // rad!
         }
     }
 
     #[cfg(not(feature = "elements"))]
-    fn exec_jet(_jet: &JetNode) -> Result<u64, Self::Error> {
+    fn exec_jet(_jet: &JetNode<Self>) -> Result<u64, Self::Error> {
         Err(ElementsError::MissingFeature)
     }
 }
